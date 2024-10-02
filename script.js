@@ -35,34 +35,55 @@ const nbaTeams = {
         "Oklahoma City Thunder"
     ]
 };
-const teamInputElem= document.getElementById("teamInput");
-const wonTableBody=document.getElementById("wonTableBody");
-const neverWonTableBody=document.getElementById("neverWonTableBody");
 
+    const teamInputElem= document.getElementById("teamInput");
+    const wonTableBody=document.getElementById("wonTableBody");
+    const neverWonTableBody=document.getElementById("neverWonTableBody");
+    const timerElem = document.getElementById("timer");
 
-teamInputElem.addEventListener("keyup", function(e) {
-    if (e.key === 'Enter') {
-        const team = teamInputElem.value;
-        
-        if (nbaTeams.won.hasOwnProperty(team)) {
-            addTeamRow(team, wonTableBody);
-        } else if (nbaTeams.neverWon.includes(team)) {
-            addTeamRow(team, neverWonTableBody);
-        } else {
-            alert(`${team} is not an NBA team`);
+    let timeRemaining = 60;
+    let timerStarted = false;
+    let countDownInterval;
+
+    teamInputElem.addEventListener("keyup", function (e) {
+        if (e.key === 'Enter' && !teamInputElem.disabled) {
+            const team = teamInputElem.value;
+
+            if (nbaTeams.won.hasOwnProperty(team)) {
+                addTeamRow(team, wonTableBody);
+                startTimer();
+            } else if (nbaTeams.neverWon.includes(team)) {
+                addTeamRow(team, neverWonTableBody);
+                startTimer();
+            } else {
+                alert(`${team} is not an NBA team`);
+            }
+
+            teamInputElem.value= '';
+        }
+    });
+
+    function addTeamRow(team, tbodyElem) {
+        const row =tbodyElem.insertRow();
+        row.insertCell(0).innerText =team;
+
+        if (nbaTeams.neverWon.indexOf(team) === -1) {
+            row.insertCell(1).innerText = nbaTeams.won[team].join(", ");
+            }
+    }
+
+    function startTimer() {
+        if (!timerStarted) {
+            timerStarted =true;
+            countDownInterval= setInterval(function () {
+                timeRemaining--;
+                timerElem.textContent =timeRemaining;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(countDownInterval);
+                    teamInputElem.disabled = true;
+                    alert("Time is over");
+                }
+            }, 1000);
         }
     }
-});
-
-function addTeamRow(team, tbodyElem) {
-    console.log(`We will add ${team} to ${tbodyElem}`);
-    const row = tbodyElem.insertRow();
-    row.insertCell(0).innerText = team;
-    
-
-    if (nbaTeams.neverWon.indexOf(team) === -1) {
-      row.insertCell(1).innerText = nbaTeams.won[team].join(", ");
-    }
-    
-  }
-  
